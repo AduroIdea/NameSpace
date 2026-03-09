@@ -15,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "21CF5060902E4683B30DED00"
-               BuildableName = "SpaceRenamer.app"
-               BlueprintName = "SpaceRenamer"
-               ReferencedContainer = "container:SpaceRenamer.xcodeproj">
+               BlueprintIdentifier = "603BBA8B78C2DCE30F057093"
+               BuildableName = "NameSpace.app"
+               BlueprintName = "NameSpace"
+               ReferencedContainer = "container:NameSpace.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,10 +32,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "21CF5060902E4683B30DED00"
-            BuildableName = "SpaceRenamer.app"
-            BlueprintName = "SpaceRenamer"
-            ReferencedContainer = "container:SpaceRenamer.xcodeproj">
+            BlueprintIdentifier = "603BBA8B78C2DCE30F057093"
+            BuildableName = "NameSpace.app"
+            BlueprintName = "NameSpace"
+            ReferencedContainer = "container:NameSpace.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -57,10 +57,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "21CF5060902E4683B30DED00"
-            BuildableName = "SpaceRenamer.app"
-            BlueprintName = "SpaceRenamer"
-            ReferencedContainer = "container:SpaceRenamer.xcodeproj">
+            BlueprintIdentifier = "603BBA8B78C2DCE30F057093"
+            BuildableName = "NameSpace.app"
+            BlueprintName = "NameSpace"
+            ReferencedContainer = "container:NameSpace.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
@@ -76,10 +76,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "21CF5060902E4683B30DED00"
-            BuildableName = "SpaceRenamer.app"
-            BlueprintName = "SpaceRenamer"
-            ReferencedContainer = "container:SpaceRenamer.xcodeproj">
+            BlueprintIdentifier = "603BBA8B78C2DCE30F057093"
+            BuildableName = "NameSpace.app"
+            BlueprintName = "NameSpace"
+            ReferencedContainer = "container:NameSpace.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>

@@ -31,11 +31,20 @@ struct SpaceListView: View {
                 .padding(.vertical, 6)
             }
             .frame(maxHeight: 300)
+            .fixedSize(horizontal: false, vertical: true)
 
             Divider()
                 .padding(.horizontal, 8)
 
             VStack(spacing: 0) {
+                Button("Help") {
+                    onDismiss()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        openHelp()
+                    }
+                }
+                .buttonStyle(MenuRowButtonStyle())
+
                 Button("Settings...") {
                     onDismiss()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -44,7 +53,7 @@ struct SpaceListView: View {
                 }
                 .buttonStyle(MenuRowButtonStyle())
 
-                Button("Quit SpaceRenamer") {
+                Button("Quit NameSpace") {
                     NSApp.terminate(nil)
                 }
                 .buttonStyle(MenuRowButtonStyle())
@@ -53,6 +62,10 @@ struct SpaceListView: View {
         }
         .frame(width: 220)
         .padding(.horizontal, 4)
+    }
+
+    private func openHelp() {
+        NotificationCenter.default.post(name: .showNameSpaceHelp, object: nil)
     }
 
     private func openSettings() {

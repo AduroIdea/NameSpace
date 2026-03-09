@@ -98,7 +98,7 @@ final class StatusBarController {
             if let button = item.button {
                 button.wantsLayer = true
                 if isCurrent {
-                    button.layer?.borderColor = NSColor.labelColor.cgColor
+                    button.layer?.borderColor = NSColor.white.cgColor
                     button.layer?.borderWidth = 1.0
                     button.layer?.cornerRadius = 3.0
                 } else {
@@ -122,9 +122,25 @@ final class StatusBarController {
         case .single:
             updateSingleTitle()
         case .multi:
-            // Rebuild multi items because count may have changed
-            tearDownItems()
-            buildMultiItems()
+            // Only full rebuild if space count changed; otherwise just restyle in place
+            if spaceManager.spaces.count != multiItems.count {
+                tearDownItems()
+                buildMultiItems()
+            } else {
+                updateMultiStyles()
+            }
+        }
+    }
+
+    private func updateMultiStyles() {
+        let currentID = spaceManager.currentSpaceID
+        for (item, space) in zip(multiItems, spaceManager.spaces) {
+            guard let button = item.button else { continue }
+            button.attributedTitle = NSAttributedString(
+                string: space.name,
+                attributes: [.font: NSFont.systemFont(ofSize: 13)]
+            )
+            applyBorder(to: button, active: space.id == currentID)
         }
     }
 
@@ -167,7 +183,24 @@ final class StatusBarController {
         if event.type == .rightMouseUp {
             showMultiPopover(from: sender)
         } else {
-            spaceManager.switchToSpace(id: sender.tag)
+            let spaceID = sender.tag
+            // Immediately restyle so border jumps to clicked item without waiting for poll
+            applyBorder(to: sender, active: true)
+            for item in multiItems where item.button !== sender {
+                if let btn = item.button { applyBorder(to: btn, active: false) }
+            }
+            spaceManager.switchToSpace(id: spaceID)
+        }
+    }
+
+    private func applyBorder(to button: NSStatusBarButton, active: Bool) {
+        button.wantsLayer = true
+        if active {
+            button.layer?.borderColor = NSColor.white.cgColor
+            button.layer?.borderWidth = 1.0
+            button.layer?.cornerRadius = 3.0
+        } else {
+            button.layer?.borderWidth = 0
         }
     }
 

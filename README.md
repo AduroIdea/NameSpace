@@ -1,6 +1,8 @@
-# SpaceRenamer
+# NameSpace
 
-macOS menu bar app za preimenovanje i prebacivanje između virtualnih desktopa (Spaces).
+**Name your macOS desktops. Switch between them in a click.**
+
+NameSpace lives in your menu bar and gives you full control over your virtual desktops — rename them, jump between them instantly, and always know where you are.
 
 ---
 
@@ -8,7 +10,7 @@ macOS menu bar app za preimenovanje i prebacivanje između virtualnih desktopa (
 
 1. Otvori `SpaceRenamer.xcodeproj` u Xcodeu
 2. `Cmd+R` za pokretanje
-3. App se pojavljuje u menu baru (bez ikone u Docku)
+3. NameSpace se pojavljuje u menu baru (bez ikone u Docku)
 
 ---
 
@@ -16,14 +18,14 @@ macOS menu bar app za preimenovanje i prebacivanje između virtualnih desktopa (
 
 ### 1. Accessibility (obavezno za switch)
 
-SpaceRenamer treba Accessibility permission da bi mogao slati keyboard eventi za prebacivanje desktopa.
+NameSpace treba Accessibility permission da bi mogao prebacivati desktope.
 
 **Kako omogućiti:**
 
 1. Pokreni app — pojavit će se dijalog pri prvom pokretanju
 2. Klikni **"Open System Settings"**
 3. Idi na **System Settings → Privacy & Security → Accessibility**
-4. Pronađi **SpaceRenamer** na listi i uključi toggle
+4. Pronađi **NameSpace** na listi i uključi toggle
 
 > **Napomena za debug build (Xcode):** Svaki novi build iz Xcodea ima drugačiji binarni hash, pa macOS resetira Accessibility permission. Moraš ga svaki put iznova odobriti. Ovo se ne dogodi s finalnim (arhiviranim) buildom.
 
@@ -31,24 +33,22 @@ SpaceRenamer treba Accessibility permission da bi mogao slati keyboard eventi za
 
 ### 2. Kreiranje desktopa
 
-SpaceRenamer automatski detektira sve desktope. Dodaješ ih u Mission Controlu:
+NameSpace automatski detektira sve desktope. Dodaješ ih u Mission Controlu:
 
 1. Otvori **Mission Control** (`F3` ili `Ctrl+↑`)
 2. Klikni **"+"** gumb u gornjem desnom kutu za svaki novi desktop
 
-> **Nema limita** na broj desktopa — SpaceRenamer prikazuje sve.
+> NameSpace nema limita na broj desktopa — prikazuje ih sve.
 
-**Napomena o keyboard shortcutima:** macOS ne kreira automatski "Switch to Desktop N" shortcute za sve desktope u Sequoiji (poznati bug). SpaceRenamer ne ovisi o tim shortcutima — za switch koristi aktivaciju aplikacije koja se nalazi na ciljnom desktopu.
+> **Napomena o keyboard shortcutima:** macOS ne kreira automatski "Switch to Desktop N" shortcute za sve desktope u Sequoiji (poznati bug). NameSpace ne ovisi o tim shortcutima — za switch koristi aktivaciju aplikacije koja se nalazi na ciljnom desktopu.
 
 ---
 
-### 3. Spaces (Mission Control) postav
+### 3. Spaces postav
 
-SpaceRenamer radi s klasičnim macOS Spacesima. Preporučena konfiguracija:
+Preporučena konfiguracija u **System Settings → Desktop & Dock → Mission Control**:
 
-1. Idi na **System Settings → Desktop & Dock → Mission Control**
-2. Uključi **"Displays have separate Spaces"** (ako imaš više monitora)
-3. Isključi **"Automatically rearrange Spaces based on most recent use"** — inače macOS mijenja redosljed desktopa i Ctrl+Number shortcuti ne odgovaraju indeksima
+- Isključi **"Automatically rearrange Spaces based on most recent use"** — inače macOS mijenja redosljed desktopa
 
 ---
 
@@ -66,7 +66,9 @@ Ako aplikacija prati tebe na sve desktope pri switchu:
 
 ### Prebacivanje desktopa
 - Klikni na naziv desktopa u menu baru → otvori se dropdown
-- Klikni na željeni desktop → app se prebaci
+- Klikni na željeni desktop → NameSpace ga prebaci
+
+**Multi mode:** Prikazuje sve desktope u menu baru — aktivni je označen bijelim okvirom. Klik prebacuje na desktop, desni klik otvara dropdown.
 
 ### Preimenovanje desktopa
 - Otvori dropdown iz menu bara
@@ -77,10 +79,10 @@ Ako aplikacija prati tebe na sve desktope pri switchu:
 ### Postavke prikaza
 - Klikni **Settings...** u dropdownu
 - **"Current workspace name"** — jedan item u menu baru s imenom aktivnog desktopa
-- **"All workspace names"** — jedan item po desktopu u menu baru, bold = aktivni
+- **"All workspace names"** — jedan item po desktopu, aktivni označen okvirom
 
 ### Launch at login
-- U Settings prozoru uključi **"Launch at login"** da se app automatski pokreće pri prijavi
+- U Settings prozoru uključi **"Launch at login"**
 
 ---
 
@@ -88,10 +90,9 @@ Ako aplikacija prati tebe na sve desktope pri switchu:
 
 | Ograničenje | Razlog |
 |---|---|
-| Switch ne radi ako na ciljnom desktopu nema otvorenih aplikacija | macOS nema javni API za prebacivanje; koristimo aktivaciju appa kao trigger |
-| Keyboard fallback radi samo za prvih 9 desktopa | macOS nema Ctrl+10+ shortcute u Mission Controlu |
+| Switch ne radi ako na ciljnom desktopu nema otvorenih aplikacija | macOS nema javni API za prebacivanje Spaces |
 | Accessibility permission se resetira na svakom debug buildu | macOS veže permission uz binarni hash |
-| App Store distribucija nije moguća | Koristimo private CGS framework API |
+| App Store distribucija nije moguća | Koristi private CGS framework API |
 | Stage Manager može uzrokovati neočekivano ponašanje | Stage Manager mijenja kako macOS grupira prozore po spacovima |
 
 ---

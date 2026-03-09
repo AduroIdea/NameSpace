@@ -1,4 +1,4 @@
-name: SpaceRenamer
+name: NameSpace
 options:
   bundleIdPrefix: com.ivanhofer
   deploymentTarget:
@@ -8,41 +8,42 @@ options:
 
 settings:
   base:
-    PRODUCT_BUNDLE_IDENTIFIER: com.ivanhofer.SpaceRenamer
+    PRODUCT_BUNDLE_IDENTIFIER: com.ivanhofer.NameSpace
     SWIFT_VERSION: 5.9
     MACOSX_DEPLOYMENT_TARGET: "13.0"
     CODE_SIGN_STYLE: Automatic
     DEVELOPMENT_TEAM: ""
 
 targets:
-  SpaceRenamer:
+  NameSpace:
     type: application
     platform: macOS
     deploymentTarget: "13.0"
     sources:
-      - path: SpaceRenamer
+      - path: NameSpace
         excludes:
           - "Info.plist"
-          - "SpaceRenamer.entitlements"
+          - "NameSpace.entitlements"
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.ivanhofer.SpaceRenamer
-        INFOPLIST_FILE: SpaceRenamer/Info.plist
-        CODE_SIGN_ENTITLEMENTS: SpaceRenamer/SpaceRenamer.entitlements
+        PRODUCT_BUNDLE_IDENTIFIER: com.ivanhofer.NameSpace
+        PRODUCT_NAME: NameSpace
+        INFOPLIST_FILE: NameSpace/Info.plist
+        CODE_SIGN_ENTITLEMENTS: NameSpace/NameSpace.entitlements
         COMBINE_HIDPI_IMAGES: YES
     info:
-      path: SpaceRenamer/Info.plist
+      path: NameSpace/Info.plist
       properties:
         LSUIElement: true
-        CFBundleName: SpaceRenamer
-        CFBundleDisplayName: SpaceRenamer
+        CFBundleName: NameSpace
+        CFBundleDisplayName: NameSpace
         CFBundleShortVersionString: "1.0"
         CFBundleVersion: "1"
         NSPrincipalClass: NSApplication
-        NSAccessibilityUsageDescription: "SpaceRenamer needs accessibility access to switch between desktops using keyboard shortcuts."
-        NSAppleEventsUsageDescription: "SpaceRenamer uses accessibility features to switch between desktops."
+        NSAccessibilityUsageDescription: "NameSpace needs accessibility access to switch between desktops using keyboard shortcuts."
+        NSAppleEventsUsageDescription: "NameSpace uses accessibility features to switch between desktops."
     entitlements:
-      path: SpaceRenamer/SpaceRenamer.entitlements
+      path: NameSpace/NameSpace.entitlements
       properties:
         com.apple.security.automation.apple-events: true
     scheme:
