@@ -35,9 +35,10 @@ final class SpaceManager: ObservableObject {
 
             for dict in spaceDicts {
                 guard let rawID = dict["id64"] as? Int else { continue }
+                let spaceType = dict["type"] as? Int ?? 0
                 newDisplayForSpace[rawID] = uuid
                 let name = store.getName(for: rawID, defaultIndex: index)
-                newSpaces.append(Space(id: rawID, index: index, name: name))
+                newSpaces.append(Space(id: rawID, index: index, name: name, type: spaceType))
                 index += 1
             }
         }
@@ -57,7 +58,11 @@ final class SpaceManager: ObservableObject {
     func switchToSpace(id: Int) {
         guard let space = spaces.first(where: { $0.id == id }) else { return }
 
-        if space.index <= 9 && AXIsProcessTrusted() {
+        // Fullscreen (type=1) and tiled (type=4) spaces don't have Mission Control
+        // Ctrl+N keyboard shortcuts — use CGS direct switch for them.
+        if space.type != 0 {
+            cgsSwitch(id: id)
+        } else if space.index <= 9 && AXIsProcessTrusted() {
             postKeyboardSwitch(index: space.index)
         } else {
             cgsSwitch(id: id)
