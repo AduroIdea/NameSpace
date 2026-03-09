@@ -10,6 +10,7 @@
 		263E568285B1929E33312A66 /* SpaceRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7BAB8739D549FDB7B7D2B9D /* SpaceRowView.swift */; };
 		4CBE67183E196C7FF0CBFD13 /* SpaceListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EE9E91EB590C50D2BBBE70D /* SpaceListView.swift */; };
 		4E6E4643F73EFCB0687F8AD5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C582977DE112BD663C821338 /* AppDelegate.swift */; };
+		524DC0FC57872CF4D7CD1A5B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3DDBD246740BA2378CE7996E /* Assets.xcassets */; };
 		5923075D0C0815EEEE4023DF /* SpaceNamesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E110DDD02F5AF8BE7A6DD83 /* SpaceNamesStore.swift */; };
 		7BD19885AFB174FBF664526E /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEE67DB3EEB256402DF32E31 /* HelpView.swift */; };
 		7D9E4425D5C6DB3500BA2491 /* CGSPrivate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20D9A368425B948FC5685037 /* CGSPrivate.swift */; };
@@ -24,6 +25,7 @@
 		188BAAC1114718E3717D676C /* StatusBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarController.swift; sourceTree = "<group>"; };
 		1E110DDD02F5AF8BE7A6DD83 /* SpaceNamesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceNamesStore.swift; sourceTree = "<group>"; };
 		20D9A368425B948FC5685037 /* CGSPrivate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGSPrivate.swift; sourceTree = "<group>"; };
+		3DDBD246740BA2378CE7996E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3EE9E91EB590C50D2BBBE70D /* SpaceListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceListView.swift; sourceTree = "<group>"; };
 		491B9022DA8E04004FEEAD2A /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		8D80003E742B0E8A87F0B37C /* NameSpace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NameSpace.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -43,6 +45,7 @@
 				948FFC266EF00EEDB5C27EB8 /* Core */,
 				B3A797ED382DA07004F6EC1C /* Models */,
 				E1711BD768ED190B2CAAC2DC /* UI */,
+				3DDBD246740BA2378CE7996E /* Assets.xcassets */,
 			);
 			path = NameSpace;
 			sourceTree = "<group>";
@@ -110,6 +113,7 @@
 			buildConfigurationList = 4EB99035E72024E18B68EF15 /* Build configuration list for PBXNativeTarget "NameSpace" */;
 			buildPhases = (
 				43F88347713A0AFFE119F1CB /* Sources */,
+				D1BCCEBA8EEB9F3F9290743E /* Resources */,
 			);
 			buildRules = (
 			);
@@ -132,8 +136,8 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					603BBA8B78C2DCE30F057093 = {
-						DevelopmentTeam = "";
-						ProvisioningStyle = Automatic;
+						DevelopmentTeam = QQD745SZ96;
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -155,6 +159,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D1BCCEBA8EEB9F3F9290743E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				524DC0FC57872CF4D7CD1A5B /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		43F88347713A0AFFE119F1CB /* Sources */ = {
@@ -229,10 +244,12 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = QQD745SZ96;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -295,10 +312,12 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = QQD745SZ96;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;

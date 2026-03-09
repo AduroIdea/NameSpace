@@ -174,6 +174,10 @@ struct AboutSettingsView: View {
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.tertiary)
 
+            Link("Aduro idea d.o.o.", destination: URL(string: "https://aduroidea.com/")!)
+                .font(.caption)
+                .foregroundStyle(.tertiary)
+
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -11,8 +11,10 @@ settings:
     PRODUCT_BUNDLE_IDENTIFIER: com.ivanhofer.NameSpace
     SWIFT_VERSION: 5.9
     MACOSX_DEPLOYMENT_TARGET: "13.0"
-    CODE_SIGN_STYLE: Automatic
-    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Manual
+    DEVELOPMENT_TEAM: QQD745SZ96
+    CODE_SIGN_IDENTITY: "Developer ID Application"
+    ENABLE_HARDENED_RUNTIME: YES
 
 targets:
   NameSpace:
@@ -31,6 +33,7 @@ targets:
         INFOPLIST_FILE: NameSpace/Info.plist
         CODE_SIGN_ENTITLEMENTS: NameSpace/NameSpace.entitlements
         COMBINE_HIDPI_IMAGES: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     info:
       path: NameSpace/Info.plist
       properties:
