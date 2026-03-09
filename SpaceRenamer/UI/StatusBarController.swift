@@ -1,0 +1,199 @@
+import AppKit
+import SwiftUI
+import Combine
+
+final class StatusBarController {
+    private let spaceManager: SpaceManager
+    private let store: SpaceNamesStore
+    private let settings = AppSettings.shared
+
+    // Single mode
+    private var singleItem: NSStatusItem?
+    private var popover: NSPopover?
+
+    // Multi mode
+    private var multiItems: [NSStatusItem] = []
+
+    private var cancellables = Set<AnyCancellable>()
+
+    init(spaceManager: SpaceManager, store: SpaceNamesStore) {
+        self.spaceManager = spaceManager
+        self.store = store
+    }
+
+    func setup() {
+        buildItems()
+
+        // Rebuild when spaces list changes
+        spaceManager.$spaces
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in self?.refreshItems() }
+            .store(in: &cancellables)
+
+        // Update title / bold in single mode when active space changes
+        spaceManager.$currentSpaceID
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in self?.refreshItems() }
+            .store(in: &cancellables)
+
+        // Rebuild entirely when display mode changes
+        settings.$displayMode
+            .receive(on: DispatchQueue.main)
+            .dropFirst()
+            .sink { [weak self] _ in
+                self?.tearDownItems()
+                self?.buildItems()
+            }
+            .store(in: &cancellables)
+    }
+
+    // MARK: - Build
+
+    private func buildItems() {
+        switch settings.displayMode {
+        case .single: buildSingleItem()
+        case .multi:  buildMultiItems()
+        }
+    }
+
+    private func buildSingleItem() {
+        let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        singleItem = item
+        updateSingleTitle()
+
+        if let button = item.button {
+            button.target = self
+            button.action = #selector(togglePopover(_:))
+            button.sendAction(on: [.leftMouseUp, .rightMouseUp])
+        }
+
+        let pop = NSPopover()
+        pop.contentSize = NSSize(width: 220, height: 320)
+        pop.behavior = .transient
+        pop.contentViewController = NSHostingController(
+            rootView: SpaceListView(
+                spaceManager: spaceManager,
+                store: store,
+                onDismiss: { [weak self] in self?.closePopover() }
+            )
+        )
+        popover = pop
+    }
+
+    private func buildMultiItems() {
+        let spaces = spaceManager.spaces
+        let currentID = spaceManager.currentSpaceID
+
+        multiItems = spaces.map { space in
+            let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+            let isCurrent = space.id == currentID
+
+            let title = space.name
+            item.button?.attributedTitle = NSAttributedString(
+                string: title,
+                attributes: [.font: NSFont.systemFont(ofSize: 13)]
+            )
+
+            // Border outline for active space
+            if let button = item.button {
+                button.wantsLayer = true
+                if isCurrent {
+                    button.layer?.borderColor = NSColor.labelColor.cgColor
+                    button.layer?.borderWidth = 1.0
+                    button.layer?.cornerRadius = 3.0
+                } else {
+                    button.layer?.borderWidth = 0
+                }
+            }
+
+            let spaceID = space.id
+            item.button?.target = self
+            item.button?.action = #selector(multiItemClicked(_:))
+            item.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
+            item.button?.tag = spaceID
+            return item
+        }
+    }
+
+    // MARK: - Refresh (without full rebuild)
+
+    private func refreshItems() {
+        switch settings.displayMode {
+        case .single:
+            updateSingleTitle()
+        case .multi:
+            // Rebuild multi items because count may have changed
+            tearDownItems()
+            buildMultiItems()
+        }
+    }
+
+    private func updateSingleTitle() {
+        guard let item = singleItem else { return }
+        let name = spaceManager.spaces
+            .first(where: { $0.id == spaceManager.currentSpaceID })?
+            .name ?? "Spaces"
+        item.button?.title = "\(name) ▾"
+    }
+
+    // MARK: - Teardown
+
+    private func tearDownItems() {
+        if let item = singleItem {
+            NSStatusBar.system.removeStatusItem(item)
+            singleItem = nil
+            popover = nil
+        }
+        for item in multiItems {
+            NSStatusBar.system.removeStatusItem(item)
+        }
+        multiItems = []
+    }
+
+    // MARK: - Actions
+
+    @objc private func togglePopover(_ sender: NSStatusBarButton) {
+        guard let popover, let button = singleItem?.button else { return }
+        if popover.isShown {
+            closePopover()
+        } else {
+            popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+            popover.contentViewController?.view.window?.makeKey()
+        }
+    }
+
+    @objc private func multiItemClicked(_ sender: NSStatusBarButton) {
+        guard let event = NSApp.currentEvent else { return }
+        if event.type == .rightMouseUp {
+            showMultiPopover(from: sender)
+        } else {
+            spaceManager.switchToSpace(id: sender.tag)
+        }
+    }
+
+    private func showMultiPopover(from button: NSStatusBarButton) {
+        if popover == nil {
+            let pop = NSPopover()
+            pop.contentSize = NSSize(width: 220, height: 320)
+            pop.behavior = .transient
+            pop.contentViewController = NSHostingController(
+                rootView: SpaceListView(
+                    spaceManager: spaceManager,
+                    store: store,
+                    onDismiss: { [weak self] in self?.closePopover() }
+                )
+            )
+            popover = pop
+        }
+        if popover?.isShown == true {
+            closePopover()
+        } else {
+            popover?.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+            popover?.contentViewController?.view.window?.makeKey()
+        }
+    }
+
+    private func closePopover() {
+        popover?.performClose(nil)
+    }
+}

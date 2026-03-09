@@ -1,0 +1,49 @@
+name: SpaceRenamer
+options:
+  bundleIdPrefix: com.ivanhofer
+  deploymentTarget:
+    macOS: "13.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+
+settings:
+  base:
+    PRODUCT_BUNDLE_IDENTIFIER: com.ivanhofer.SpaceRenamer
+    SWIFT_VERSION: 5.9
+    MACOSX_DEPLOYMENT_TARGET: "13.0"
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: ""
+
+targets:
+  SpaceRenamer:
+    type: application
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - path: SpaceRenamer
+        excludes:
+          - "Info.plist"
+          - "SpaceRenamer.entitlements"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ivanhofer.SpaceRenamer
+        INFOPLIST_FILE: SpaceRenamer/Info.plist
+        CODE_SIGN_ENTITLEMENTS: SpaceRenamer/SpaceRenamer.entitlements
+        COMBINE_HIDPI_IMAGES: YES
+    info:
+      path: SpaceRenamer/Info.plist
+      properties:
+        LSUIElement: true
+        CFBundleName: SpaceRenamer
+        CFBundleDisplayName: SpaceRenamer
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        NSPrincipalClass: NSApplication
+        NSAccessibilityUsageDescription: "SpaceRenamer needs accessibility access to switch between desktops using keyboard shortcuts."
+        NSAppleEventsUsageDescription: "SpaceRenamer uses accessibility features to switch between desktops."
+    entitlements:
+      path: SpaceRenamer/SpaceRenamer.entitlements
+      properties:
+        com.apple.security.automation.apple-events: true
+    scheme:
+      testTargets: []
