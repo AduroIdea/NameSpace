@@ -6,102 +6,74 @@ NameSpace lives in your menu bar and gives you full control over your virtual de
 
 ---
 
-## Instalacija
+## Install
 
-1. Otvori `SpaceRenamer.xcodeproj` u Xcodeu
-2. `Cmd+R` za pokretanje
-3. NameSpace se pojavljuje u menu baru (bez ikone u Docku)
+### Homebrew (recommended)
 
----
+```bash
+brew tap AduroIdea/namespace
+brew install --cask namespace
+```
 
-## Što trebaš omogućiti
+### Manual
 
-### 1. Accessibility (obavezno za switch)
-
-NameSpace treba Accessibility permission da bi mogao prebacivati desktope.
-
-**Kako omogućiti:**
-
-1. Pokreni app — pojavit će se dijalog pri prvom pokretanju
-2. Klikni **"Open System Settings"**
-3. Idi na **System Settings → Privacy & Security → Accessibility**
-4. Pronađi **NameSpace** na listi i uključi toggle
-
-> **Napomena za debug build (Xcode):** Svaki novi build iz Xcodea ima drugačiji binarni hash, pa macOS resetira Accessibility permission. Moraš ga svaki put iznova odobriti. Ovo se ne dogodi s finalnim (arhiviranim) buildom.
+Download the latest `NameSpace.dmg` from [Releases](https://github.com/AduroIdea/NameSpace/releases), open it and drag NameSpace to your Applications folder.
 
 ---
 
-### 2. Kreiranje desktopa
+## Requirements
 
-NameSpace automatski detektira sve desktope. Dodaješ ih u Mission Controlu:
-
-1. Otvori **Mission Control** (`F3` ili `Ctrl+↑`)
-2. Klikni **"+"** gumb u gornjem desnom kutu za svaki novi desktop
-
-> NameSpace nema limita na broj desktopa — prikazuje ih sve.
-
-> **Napomena o keyboard shortcutima:** macOS ne kreira automatski "Switch to Desktop N" shortcute za sve desktope u Sequoiji (poznati bug). NameSpace ne ovisi o tim shortcutima — za switch koristi aktivaciju aplikacije koja se nalazi na ciljnom desktopu.
+- macOS 13 Ventura or later
+- Accessibility permission (prompted on first launch)
 
 ---
 
-### 3. Spaces postav
+## Usage
 
-Preporučena konfiguracija u **System Settings → Desktop & Dock → Mission Control**:
+### Switching desktops
+- Click the NameSpace icon in the menu bar to open the dropdown
+- Click any desktop name to switch to it instantly
 
-- Isključi **"Automatically rearrange Spaces based on most recent use"** — inače macOS mijenja redosljed desktopa
+### Renaming desktops
+- Open the dropdown and click the ✏️ icon next to any desktop
+- Type a new name and press Enter — names persist across restarts
 
----
+### Display modes
+- **Single mode** — shows the current desktop name in the menu bar
+- **All mode** — shows every desktop as a separate item; the active one is highlighted with a white border. Right-click any item to open the dropdown.
 
-### 4. App assignment po desktopu
-
-Ako aplikacija prati tebe na sve desktope pri switchu:
-
-1. Desni klik na ikonu app u **Docku**
-2. **Options → Assign To**
-3. Postavi na **"This Desktop"** umjesto "All Desktops"
-
----
-
-## Kako koristiti
-
-### Prebacivanje desktopa
-- Klikni na naziv desktopa u menu baru → otvori se dropdown
-- Klikni na željeni desktop → NameSpace ga prebaci
-
-**Multi mode:** Prikazuje sve desktope u menu baru — aktivni je označen bijelim okvirom. Klik prebacuje na desktop, desni klik otvara dropdown.
-
-### Preimenovanje desktopa
-- Otvori dropdown iz menu bara
-- Klikni ikonu ✏️ pored desktopa kojeg želiš preimenovati
-- Upiši novi naziv → pritisni `Enter`
-- Ime se sprema i ostaje i nakon restarta appa
-
-### Postavke prikaza
-- Klikni **Settings...** u dropdownu
-- **"Current workspace name"** — jedan item u menu baru s imenom aktivnog desktopa
-- **"All workspace names"** — jedan item po desktopu, aktivni označen okvirom
-
-### Launch at login
-- U Settings prozoru uključi **"Launch at login"**
+Switch between modes in **Settings**.
 
 ---
 
-## Poznata ograničenja
+## Setup
 
-| Ograničenje | Razlog |
+### Accessibility permission
+NameSpace needs Accessibility access to switch desktops using keyboard simulation. On first launch you'll be prompted automatically. You can also grant it in:
+
+**System Settings → Privacy & Security → Accessibility**
+
+### Creating desktops
+Open Mission Control (`F3` or `Ctrl+↑`), then click the **+** button in the top-right corner to add new desktops.
+
+### Keyboard shortcuts for desktops
+Go to **System Settings → Keyboard → Keyboard Shortcuts → Mission Control** and enable the "Switch to Desktop N" shortcuts. Close System Settings before creating new desktops — otherwise macOS may not register the new shortcuts.
+
+### Recommended Mission Control setting
+Disable **"Automatically rearrange Spaces based on most recent use"** in **System Settings → Desktop & Dock → Mission Control** to prevent macOS from reordering your desktops.
+
+---
+
+## Known limitations
+
+| Limitation | Reason |
 |---|---|
-| Switch ne radi ako na ciljnom desktopu nema otvorenih aplikacija | macOS nema javni API za prebacivanje Spaces |
-| Accessibility permission se resetira na svakom debug buildu | macOS veže permission uz binarni hash |
-| App Store distribucija nije moguća | Koristi private CGS framework API |
-| Stage Manager može uzrokovati neočekivano ponašanje | Stage Manager mijenja kako macOS grupira prozore po spacovima |
+| Switch may not work if the target desktop has no open apps | macOS has no public API for switching Spaces |
+| App Store distribution not possible | Uses private CGS framework APIs |
+| Stage Manager may cause unexpected behaviour | Stage Manager changes how macOS groups windows per space |
 
 ---
 
-## Distribucija (bez App Storea)
+## Built by
 
-Za trajnu instalaciju bez problema s Accessibility permissionom:
-
-1. U Xcodeu: **Product → Archive**
-2. **Distribute App → Direct Distribution → Export**
-3. Kopiraj `.app` u `/Applications`
-4. Pokreni jednom i odobri Accessibility u System Settings — ostaje trajno
+[Aduro idea d.o.o.](https://aduroidea.com)
