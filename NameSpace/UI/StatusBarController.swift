@@ -155,6 +155,7 @@ final class StatusBarController {
     // MARK: - Teardown
 
     private func tearDownItems() {
+        closePopover()
         if let item = singleItem {
             NSStatusBar.system.removeStatusItem(item)
             singleItem = nil

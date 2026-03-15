@@ -8,7 +8,6 @@ extension Notification.Name {
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     var statusBarController: StatusBarController?
-    private var settingsWindow: NSWindow?
     private var helpWindow: NSWindow?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -40,23 +39,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc func showSettings() {
         NSApp.setActivationPolicy(.regular)
-
-        if settingsWindow == nil {
-            let win = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 660, height: 420),
-                styleMask: [.titled, .closable],
-                backing: .buffered,
-                defer: false
-            )
-            win.title = "NameSpace Settings"
-            win.contentView = NSHostingView(rootView: SettingsView())
-            win.center()
-            win.isReleasedWhenClosed = false
-            win.delegate = self
-            settingsWindow = win
-        }
-
-        settingsWindow?.makeKeyAndOrderFront(nil)
+        NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
         NSApp.activate(ignoringOtherApps: true)
     }
 
@@ -105,13 +88,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
 extension AppDelegate: NSWindowDelegate {
     func windowWillClose(_ notification: Notification) {
-        // Only hide app when all our windows are closed
-        let settingsOpen = settingsWindow?.isVisible ?? false
         let helpOpen = helpWindow?.isVisible ?? false
-        let closingSettings = (notification.object as? NSWindow) === settingsWindow
         let closingHelp = (notification.object as? NSWindow) === helpWindow
-        let anyStillOpen = (settingsOpen && !closingSettings) || (helpOpen && !closingHelp)
-        if !anyStillOpen {
+        if !(helpOpen && !closingHelp) {
             NSApp.setActivationPolicy(.accessory)
         }
     }

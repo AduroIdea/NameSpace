@@ -20,33 +20,35 @@ final class SpaceManager: ObservableObject {
     // MARK: - Fetch
 
     func fetchSpaces() {
-        let cid = CGSMainConnectionID()
-        let displayArray = CGSCopyManagedDisplaySpaces(cid) as? [[String: Any]] ?? []
+        autoreleasepool {
+            let cid = CGSMainConnectionID()
+            let displayArray = CGSCopyManagedDisplaySpaces(cid) as? [[String: Any]] ?? []
 
-        var index = 1
-        var newSpaces: [Space] = []
-        var newDisplayForSpace: [Int: String] = [:]
+            var index = 1
+            var newSpaces: [Space] = []
+            var newDisplayForSpace: [Int: String] = [:]
 
-        for display in displayArray {
-            guard
-                let uuid = display["Display Identifier"] as? String,
-                let spaceDicts = display["Spaces"] as? [[String: Any]]
-            else { continue }
+            for display in displayArray {
+                guard
+                    let uuid = display["Display Identifier"] as? String,
+                    let spaceDicts = display["Spaces"] as? [[String: Any]]
+                else { continue }
 
-            for dict in spaceDicts {
-                guard let rawID = dict["id64"] as? Int else { continue }
-                let spaceType = dict["type"] as? Int ?? 0
-                newDisplayForSpace[rawID] = uuid
-                let name = store.getName(for: rawID, defaultIndex: index)
-                newSpaces.append(Space(id: rawID, index: index, name: name, type: spaceType))
-                index += 1
+                for dict in spaceDicts {
+                    guard let rawID = dict["id64"] as? Int else { continue }
+                    let spaceType = dict["type"] as? Int ?? 0
+                    newDisplayForSpace[rawID] = uuid
+                    let name = store.getName(for: rawID, defaultIndex: index)
+                    newSpaces.append(Space(id: rawID, index: index, name: name, type: spaceType))
+                    index += 1
+                }
             }
-        }
 
-        let activeID = Int(CGSGetActiveSpace(cid))
-        displayForSpace = newDisplayForSpace
-        if newSpaces != spaces { spaces = newSpaces }
-        if activeID != currentSpaceID { currentSpaceID = activeID }
+            let activeID = Int(CGSGetActiveSpace(cid))
+            displayForSpace = newDisplayForSpace
+            if newSpaces != spaces { spaces = newSpaces }
+            if activeID != currentSpaceID { currentSpaceID = activeID }
+        }
     }
 
     // MARK: - Switch
