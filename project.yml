@@ -40,8 +40,8 @@ targets:
         LSUIElement: true
         CFBundleName: NameSpace
         CFBundleDisplayName: NameSpace
-        CFBundleShortVersionString: "1.3"
-        CFBundleVersion: "4"
+        CFBundleShortVersionString: "1.4"
+        CFBundleVersion: "5"
         NSPrincipalClass: NSApplication
         NSAccessibilityUsageDescription: "NameSpace needs accessibility access to switch between desktops using keyboard shortcuts."
         NSAppleEventsUsageDescription: "NameSpace uses accessibility features to switch between desktops."

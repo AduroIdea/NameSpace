@@ -15,6 +15,15 @@ final class StatusBarController {
     // Multi mode
     private var multiItems: [NSStatusItem] = []
 
+    // Auto mode
+    private var autoIsMulti = false
+    private var autoGeneration = 0  // incremented to cancel stale async builds
+
+    private static let menuBarItemFont    = NSFont.systemFont(ofSize: 13)
+    private static let menuBarItemPadding = CGFloat(28)
+    private static let autoFitMargin      = CGFloat(250)  // buffer for left-side app menus
+    private static let autoHysteresis     = CGFloat(40)   // extra slack to prevent single↔multi oscillation
+
     private var cancellables = Set<AnyCancellable>()
 
     init(spaceManager: SpaceManager, store: SpaceNamesStore) {
@@ -46,14 +55,22 @@ final class StatusBarController {
                 self?.buildItems()
             }
             .store(in: &cancellables)
+
+        // Re-evaluate auto mode when the active app changes (different apps have different menu bar widths)
+        NSWorkspace.shared.notificationCenter
+            .publisher(for: NSWorkspace.didActivateApplicationNotification)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in self?.handleWorkspaceChange() }
+            .store(in: &cancellables)
     }
 
     // MARK: - Build
 
     private func buildItems() {
         switch settings.displayMode {
-        case .single: buildSingleItem()
-        case .multi:  buildMultiItems()
+        case .automatic: buildAutoItems()
+        case .single:    buildSingleItem()
+        case .multi:     buildMultiItems()
         }
     }
 
@@ -66,6 +83,7 @@ final class StatusBarController {
             button.target = self
             button.action = #selector(togglePopover(_:))
             button.sendAction(on: [.leftMouseUp, .rightMouseUp])
+            applyBorder(to: button, active: true)
         }
 
         let pop = NSPopover()
@@ -92,7 +110,7 @@ final class StatusBarController {
             let title = space.name
             item.button?.attributedTitle = NSAttributedString(
                 string: title,
-                attributes: [.font: NSFont.systemFont(ofSize: 13)]
+                attributes: [.font: Self.menuBarItemFont]
             )
 
             // Border outline for active space
@@ -116,10 +134,131 @@ final class StatusBarController {
         }
     }
 
+    // MARK: - Auto mode
+
+    private func buildAutoItems() {
+        autoGeneration += 1
+        let generation = autoGeneration
+        buildSingleItem()
+        autoIsMulti = false
+        // Start with single to measure available space, then upgrade if multi fits.
+        // 0.15s delay gives the status bar time to assign real frame coordinates.
+        // The generation guard cancels this block if tearDownItems() fires before it runs.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { [weak self] in
+            guard let self,
+                  self.settings.displayMode == .automatic,
+                  self.autoGeneration == generation else { return }
+            guard let f = self.singleItem?.button?.window?.frame, f.origin.x > 0 else { return }
+            if self.canFitMulti() {
+                self.tearDownItems()
+                self.buildMultiItems()
+                self.autoIsMulti = true
+            }
+        }
+    }
+
+    /// Total pixel width needed to display all spaces as multi items.
+    private func requiredMultiWidth() -> CGFloat {
+        spaceManager.spaces.reduce(CGFloat(0)) { sum, space in
+            let w = (space.name as NSString)
+                .size(withAttributes: [.font: Self.menuBarItemFont]).width
+            return sum + w + Self.menuBarItemPadding
+        }
+    }
+
+    /// Right edge (in points) of the frontmost app's menu bar items, measured via AX.
+    private func appMenuRightEdge() -> CGFloat {
+        guard AXIsProcessTrusted() else { return Self.autoFitMargin }
+        guard let app = NSWorkspace.shared.menuBarOwningApplication else { return 0 }
+        let axApp = AXUIElementCreateApplication(app.processIdentifier)
+        var raw: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(axApp, "AXMenuBar" as CFString, &raw) == .success,
+              let menuBar = raw else { return 0 }
+        var childRaw: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(menuBar as! AXUIElement, "AXChildren" as CFString, &childRaw) == .success,
+              let childArr = childRaw,
+              CFGetTypeID(childArr) == CFArrayGetTypeID() else { return 0 }
+        let arr = childArr as! CFArray
+        let screenMid = (NSScreen.main?.frame.width ?? 1440) / 2
+        var rightEdge: CGFloat = 0
+        for i in 0..<CFArrayGetCount(arr) {
+            guard let ptr = CFArrayGetValueAtIndex(arr, i) else { continue }
+            let child = Unmanaged<AXUIElement>.fromOpaque(ptr).takeUnretainedValue()
+            var fRaw: CFTypeRef?
+            guard AXUIElementCopyAttributeValue(child, "AXFrame" as CFString, &fRaw) == .success,
+                  let fv = fRaw else { continue }
+            var rect = CGRect.zero
+            AXValueGetValue(fv as! AXValue, .cgRect, &rect)
+            if rect.origin.x < screenMid { rightEdge = max(rightEdge, rect.maxX) }
+        }
+        return rightEdge
+    }
+
+    /// True while multi is showing and the leftmost item clears the app menu.
+    private func multiItemsFit() -> Bool {
+        guard let leftmost = multiItems.last,
+              let window = leftmost.button?.window else { return false }
+        let leftmostX = window.frame.origin.x
+        guard leftmostX > 0 else { return true }  // not yet positioned, assume fits
+        let menuEdge = appMenuRightEdge()
+        return leftmostX > menuEdge + Self.autoHysteresis
+    }
+
+    /// True when single is showing and multi items would fit in the available space.
+    /// Estimated leftmost multi item = singleX + singleWidth - needed.
+    /// Items fit when that position > menuEdge + hysteresis.
+    private func canFitMulti() -> Bool {
+        guard let window = singleItem?.button?.window else { return false }
+        let menuEdge = appMenuRightEdge()
+        let needed = requiredMultiWidth()
+        let estimatedLeftmost = window.frame.origin.x + window.frame.width - needed
+        return estimatedLeftmost > menuEdge + Self.autoHysteresis
+    }
+
+    private var isPopoverShown: Bool { popover?.isShown == true }
+
+    private func handleWorkspaceChange() {
+        guard settings.displayMode == .automatic, !isPopoverShown else { return }
+        if autoIsMulti {
+            if !multiItemsFit() {
+                tearDownItems()
+                buildSingleItem()
+                autoIsMulti = false
+            }
+        } else {
+            if canFitMulti() {
+                tearDownItems()
+                buildMultiItems()
+                autoIsMulti = true
+            }
+        }
+    }
+
     // MARK: - Refresh (without full rebuild)
 
     private func refreshItems() {
         switch settings.displayMode {
+        case .automatic:
+            if autoIsMulti {
+                if spaceManager.spaces.count != multiItems.count {
+                    tearDownItems()
+                    buildAutoItems()
+                } else {
+                    updateMultiStyles()
+                    if !isPopoverShown && !multiItemsFit() {
+                        tearDownItems()
+                        buildSingleItem()
+                        autoIsMulti = false
+                    }
+                }
+            } else {
+                updateSingleTitle()
+                if !isPopoverShown && canFitMulti() {
+                    tearDownItems()
+                    buildMultiItems()
+                    autoIsMulti = true
+                }
+            }
         case .single:
             updateSingleTitle()
         case .multi:
@@ -140,7 +279,7 @@ final class StatusBarController {
             button.tag = space.id
             button.attributedTitle = NSAttributedString(
                 string: space.name,
-                attributes: [.font: NSFont.systemFont(ofSize: 13)]
+                attributes: [.font: Self.menuBarItemFont]
             )
             applyBorder(to: button, active: space.id == currentID)
         }
@@ -157,6 +296,7 @@ final class StatusBarController {
     // MARK: - Teardown
 
     private func tearDownItems() {
+        autoGeneration += 1  // cancel any pending buildAutoItems async block
         closePopover()
         popover = nil
         if let item = singleItem {
