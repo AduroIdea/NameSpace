@@ -30,7 +30,7 @@ struct SpaceRowView: View {
             } else {
                 Text(space.name)
                     .font(isCurrent ? .system(size: 13, weight: .semibold) : .system(size: 13))
-                    .foregroundStyle(isCurrent ? Color.primary : Color.primary)
+                    .foregroundStyle(Color.primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .contentShape(Rectangle())
                     .onTapGesture { onSelect() }

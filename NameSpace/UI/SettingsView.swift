@@ -22,7 +22,7 @@ final class AppSettings: ObservableObject {
     private init() {
         let raw = UserDefaults.standard.string(forKey: "displayMode") ?? DisplayMode.single.rawValue
         displayMode = DisplayMode(rawValue: raw) ?? .single
-        launchAtLogin = (try? SMAppService.mainApp.status == .enabled) ?? false
+        launchAtLogin = SMAppService.mainApp.status == .enabled
     }
 
     private func applyLaunchAtLogin() {
@@ -158,7 +158,7 @@ struct AboutSettingsView: View {
             VStack(spacing: 6) {
                 Text("NameSpace")
                     .font(.largeTitle.bold())
-                Text("Version 1.0")
+                Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")")
                     .foregroundStyle(.secondary)
             }
 
@@ -174,7 +174,7 @@ struct AboutSettingsView: View {
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.tertiary)
 
-            Link("Aduro idea d.o.o.", destination: URL(string: "https://aduroidea.com/")!)
+            Link("Aduro idea Ltd", destination: URL(string: "https://aduroidea.com/")!)
                 .font(.caption)
                 .foregroundStyle(.tertiary)
 

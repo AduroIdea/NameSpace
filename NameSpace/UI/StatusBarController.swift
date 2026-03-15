@@ -2,6 +2,7 @@ import AppKit
 import SwiftUI
 import Combine
 
+@MainActor
 final class StatusBarController {
     private let spaceManager: SpaceManager
     private let store: SpaceNamesStore
@@ -136,6 +137,7 @@ final class StatusBarController {
         let currentID = spaceManager.currentSpaceID
         for (item, space) in zip(multiItems, spaceManager.spaces) {
             guard let button = item.button else { continue }
+            button.tag = space.id
             button.attributedTitle = NSAttributedString(
                 string: space.name,
                 attributes: [.font: NSFont.systemFont(ofSize: 13)]
@@ -156,10 +158,10 @@ final class StatusBarController {
 
     private func tearDownItems() {
         closePopover()
+        popover = nil
         if let item = singleItem {
             NSStatusBar.system.removeStatusItem(item)
             singleItem = nil
-            popover = nil
         }
         for item in multiItems {
             NSStatusBar.system.removeStatusItem(item)

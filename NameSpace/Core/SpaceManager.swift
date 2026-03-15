@@ -1,6 +1,7 @@
 import AppKit
 import Combine
 
+@MainActor
 final class SpaceManager: ObservableObject {
     @Published var spaces: [Space] = []
     @Published var currentSpaceID: Int = 0
