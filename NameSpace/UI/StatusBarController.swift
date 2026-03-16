@@ -222,8 +222,7 @@ final class StatusBarController {
         if autoIsMulti {
             if !multiItemsFit() {
                 tearDownItems()
-                buildSingleItem()
-                autoIsMulti = false
+                buildAutoItems()  // self-heals: re-evaluates after 150ms
             }
         } else {
             if canFitMulti() {

@@ -9,11 +9,17 @@ final class SpaceManager: ObservableObject {
     private var displayForSpace: [Int: String] = [:]
     private let store: SpaceNamesStore
     private var timer: Timer?
+    private var cancellables = Set<AnyCancellable>()
 
     init(store: SpaceNamesStore) {
         self.store = store
         fetchSpaces()
         startPolling()
+        NSWorkspace.shared.notificationCenter
+            .publisher(for: NSWorkspace.activeSpaceDidChangeNotification)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in self?.fetchSpaces() }
+            .store(in: &cancellables)
     }
 
     deinit { timer?.invalidate() }
