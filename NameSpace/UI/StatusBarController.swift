@@ -174,21 +174,25 @@ final class StatusBarController {
         var raw: CFTypeRef?
         guard AXUIElementCopyAttributeValue(axApp, "AXMenuBar" as CFString, &raw) == .success,
               let menuBar = raw else { return 0 }
+        guard CFGetTypeID(menuBar) == AXUIElementGetTypeID() else { return 0 }
+        let menuBarElement = menuBar as! AXUIElement
         var childRaw: CFTypeRef?
-        guard AXUIElementCopyAttributeValue(menuBar as! AXUIElement, "AXChildren" as CFString, &childRaw) == .success,
+        guard AXUIElementCopyAttributeValue(menuBarElement, "AXChildren" as CFString, &childRaw) == .success,
               let childArr = childRaw,
               CFGetTypeID(childArr) == CFArrayGetTypeID() else { return 0 }
         let arr = childArr as! CFArray
-        let screenMid = (NSScreen.main?.frame.width ?? 1440) / 2
+        // NSScreen.screens.first is always the menu bar screen (index 0), unlike NSScreen.main
+        let screenMid = (NSScreen.screens.first?.frame.width ?? 1440) / 2
         var rightEdge: CGFloat = 0
         for i in 0..<CFArrayGetCount(arr) {
             guard let ptr = CFArrayGetValueAtIndex(arr, i) else { continue }
             let child = Unmanaged<AXUIElement>.fromOpaque(ptr).takeUnretainedValue()
             var fRaw: CFTypeRef?
             guard AXUIElementCopyAttributeValue(child, "AXFrame" as CFString, &fRaw) == .success,
-                  let fv = fRaw else { continue }
+                  let fv = fRaw,
+                  CFGetTypeID(fv) == AXValueGetTypeID() else { continue }
             var rect = CGRect.zero
-            AXValueGetValue(fv as! AXValue, .cgRect, &rect)
+            guard AXValueGetValue(fv as! AXValue, .cgRect, &rect) else { continue }
             if rect.origin.x < screenMid { rightEdge = max(rightEdge, rect.maxX) }
         }
         return rightEdge
